@@ -1,4 +1,6 @@
 *.uasset
+!BP_*.uasset
+!*_BP.uasset
 *.umap
 
 # Visual Studio 2015 user specific files
