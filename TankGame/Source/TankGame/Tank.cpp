@@ -45,7 +45,7 @@ void ATank::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void ATank::Fire()
 {
-	bool isReloaded = (FPlatformTime::Seconds() - LastFired) > ReloadTimeInSeconds;
+	bool isReloaded = (GetWorld()->GetTimeSeconds() - LastFired) > ReloadTimeInSeconds;
 
 	if (Barrel && isReloaded) {
 
@@ -56,7 +56,7 @@ void ATank::Fire()
 			);
 
 		Projectile->LaunchProjectile(LaunchSpeed);
-		LastFired = FPlatformTime::Seconds();
+		LastFired = GetWorld()->GetTimeSeconds();
 	}
 }
 
