@@ -18,7 +18,7 @@ void ATankAIController::Tick(float DeltaTime)
 	
 	auto ControlledTank = Cast<ATank>(GetPawn());
 
-	if (PlayerTank && ControlledTank)
+	if (ensure(PlayerTank && ControlledTank))
 	{
 		//TODO Move towards player
 		MoveToActor(PlayerTank, AcceptanceRadius);

@@ -10,12 +10,11 @@ void ATankPlayerController::BeginPlay()
 	Super::BeginPlay();
 
 	auto AimingComponent = GetControlledTank()->FindComponentByClass<UTankAimingComponent>();
-	if (AimingComponent) 
-	{
-		FoundAimingComponent(AimingComponent);
-	}
+	if (!ensure(AimingComponent)) { return; }
+	FoundAimingComponent(AimingComponent);
 
 }
+//
 
 void ATankPlayerController::Tick(float DeltaTime)
 {
@@ -33,12 +32,12 @@ ATank* ATankPlayerController::GetControlledTank() const
 
 void ATankPlayerController::AimTowardsCrosshair()
 {
-	if (!GetControlledTank()){  return;  }
+	if (!ensure(GetControlledTank())){  return;  }
 
 
 	FVector HitLocation;   //Out Parameter
 
-	if (GetSightRayHitLocation(HitLocation))     //has "side-effect"; is going to linetrace
+	if (ensure(GetSightRayHitLocation(HitLocation)))     //has "side-effect"; is going to linetrace
 	{
 		GetControlledTank()->AimAt(HitLocation);
 	}
@@ -55,7 +54,7 @@ bool ATankPlayerController::GetSightRayHitLocation(FVector& OutHitLocation) cons
 	auto ScreenLocation = FVector2D(ViewportSizeX * CrossHairX, ViewportSizeY * CrossHairY);
 
 	FVector LookDirection;
-	if (GetLookDirection(ScreenLocation, LookDirection))
+	if (ensure(GetLookDirection(ScreenLocation, LookDirection)))
 	{
 		GetLookVectorHitLocation(LookDirection, OutHitLocation);
 	}
