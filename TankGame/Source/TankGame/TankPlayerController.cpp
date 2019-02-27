@@ -2,19 +2,19 @@
 
 #include "TankPlayerController.h"
 #include "Tank.h"
+#include "TankAimingComponent.h"
 
 
 void ATankPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	auto ControlledTank = GetControlledTank();
-	if (ControlledTank != NULL){
-		UE_LOG(LogTemp, Warning, TEXT("Player controller possessing: %s"), *ControlledTank->GetName());
+	auto AimingComponent = GetControlledTank()->FindComponentByClass<UTankAimingComponent>();
+	if (AimingComponent) 
+	{
+		FoundAimingComponent(AimingComponent);
 	}
-	else {
-		UE_LOG(LogTemp, Warning, TEXT("Tank not found by PlayerController"));
-	}
+
 }
 
 void ATankPlayerController::Tick(float DeltaTime)
