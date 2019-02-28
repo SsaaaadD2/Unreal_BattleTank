@@ -28,6 +28,6 @@ void ATankAIController::Tick(float DeltaTime)
 
 		AimingComponent->AimAt(HitLocation);
 
-		//AimingComponent->Fire();  //TODO: Fix firing
+		AimingComponent->Fire();  //TODO: Fix firing
 	}
 }
