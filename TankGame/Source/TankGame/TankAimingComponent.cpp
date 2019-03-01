@@ -10,11 +10,27 @@ UTankAimingComponent::UTankAimingComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = false;
+	PrimaryComponentTick.bCanEverTick = true;
 
 	// ...
 }
 
+// Called every frame
+void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	if ((GetWorld()->GetTimeSeconds() - LastFired) < ReloadTimeInSeconds)
+	{
+		FiringState = EFiringState::Reloading;
+	}
+	else if (IsBarrelMoving())
+	{
+		FiringState = EFiringState::Aiming;
+	}
+	else
+	{
+		FiringState = EFiringState::Locked;
+	}
+}
 
 void UTankAimingComponent::Initialise(UTankBarrel* BarrelToSet, UTankTurret* TurretToSet)
 {
@@ -28,8 +44,17 @@ void UTankAimingComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
-	
+
+	//So that first fire is after initial reload
+	LastFired = GetWorld()->GetTimeSeconds();
+}
+
+bool UTankAimingComponent::IsBarrelMoving()
+{
+	if (!ensure(Barrel)) { return false; }
+	FVector CurrentForwardVector = Barrel->GetForwardVector();
+	return !CurrentForwardVector.FVector::Equals(AimDirection, 0.01f);   //vectors are equal
+
 }
 
 void UTankAimingComponent::AimAt(FVector HitLocation)
@@ -40,7 +65,7 @@ void UTankAimingComponent::AimAt(FVector HitLocation)
 	FVector StartLocation = Barrel ->GetSocketLocation(FName("Projectile"));
 
 	//Calculate OutLaunchVelocity
-	if (ensure(UGameplayStatics::SuggestProjectileVelocity(
+	if (UGameplayStatics::SuggestProjectileVelocity(
 		this, 
 		OutLaunchVelocity, 
 		StartLocation, 
@@ -50,23 +75,16 @@ void UTankAimingComponent::AimAt(FVector HitLocation)
 		0,
 		0,
 		ESuggestProjVelocityTraceOption::DoNotTrace
-		)))
+		))
 	{
-		auto DesiredAimDirection = OutLaunchVelocity.GetSafeNormal();
-		MoveBarrelTowards(DesiredAimDirection);
+		AimDirection = OutLaunchVelocity.GetSafeNormal();
+		MoveBarrelTowards(AimDirection);
 	}
 	//if don't get a solution don't do anything
 }
 	
 
 
-// Called every frame
-void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
-}
 
 void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 {
@@ -81,11 +99,12 @@ void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 
 void UTankAimingComponent::Fire()
 {
-	if (!ensure(Barrel && ProjectileBlueprint)) { return; }
 
-	bool isReloaded = (GetWorld()->GetTimeSeconds() - LastFired) > ReloadTimeInSeconds;
+	
 
-	if (isReloaded) {
+	if (FiringState != EFiringState::Reloading) {
+		if (!ensure(Barrel)) { return; }
+		if (!ensure(ProjectileBlueprint)) { return; }
 
 		auto Projectile = GetWorld()->SpawnActor<AProjectile>(
 			ProjectileBlueprint,
@@ -96,4 +115,5 @@ void UTankAimingComponent::Fire()
 		Projectile->LaunchProjectile(LaunchSpeed);
 		LastFired = GetWorld()->GetTimeSeconds();
 	}
+	
 }
