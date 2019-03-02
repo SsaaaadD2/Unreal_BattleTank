@@ -13,6 +13,7 @@ UTankTrack::UTankTrack()
 void UTankTrack::BeginPlay()
 {
 	Super::BeginPlay();
+	SetNotifyRigidBodyCollision(true);
 
 	OnComponentHit.AddDynamic(this, &UTankTrack::OnHit);
 }
