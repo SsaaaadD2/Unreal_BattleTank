@@ -15,6 +15,22 @@ UTankAimingComponent::UTankAimingComponent()
 	// ...
 }
 
+// Called when the game starts
+void UTankAimingComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+
+	//So that first fire is after initial reload
+	LastFired = GetWorld()->GetTimeSeconds();
+}
+
+void UTankAimingComponent::Initialise(UTankBarrel* BarrelToSet, UTankTurret* TurretToSet)
+{
+	Barrel = BarrelToSet;
+	Turret = TurretToSet;
+}
+
 // Called every frame
 void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
@@ -32,22 +48,11 @@ void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	}
 }
 
-void UTankAimingComponent::Initialise(UTankBarrel* BarrelToSet, UTankTurret* TurretToSet)
+EFiringState UTankAimingComponent::GetFiringState() const
 {
-	Barrel = BarrelToSet;
-	Turret = TurretToSet;
+	return FiringState;
 }
 
-
-// Called when the game starts
-void UTankAimingComponent::BeginPlay()
-{
-	Super::BeginPlay();
-
-
-	//So that first fire is after initial reload
-	LastFired = GetWorld()->GetTimeSeconds();
-}
 
 bool UTankAimingComponent::IsBarrelMoving()
 {
@@ -124,3 +129,4 @@ void UTankAimingComponent::Fire()
 	}
 	
 }
+

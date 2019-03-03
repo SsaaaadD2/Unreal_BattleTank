@@ -25,7 +25,7 @@ public:
 
 private:
 
-	UPROPERTY(EditAnywhere, Category = Setup)
-	float AcceptanceRadius = 3000; //How close can the AI tank get to the player
+	UPROPERTY(EditDefaultsOnly, Category = Setup)
+	float AcceptanceRadius = 8000; //How close can the AI tank get to the player
 	
 };
