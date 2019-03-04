@@ -1,4 +1,3 @@
-*.uasset
 !BP_*.uasset
 !*_BP.uasset
 *.umap
