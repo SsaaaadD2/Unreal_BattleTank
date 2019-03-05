@@ -25,6 +25,11 @@ public:
 
 private:
 
+	virtual void SetPawn(APawn* InPawn) override;
+
+	UFUNCTION()
+	void OnPossessedTankDeath();
+
 	UPROPERTY(EditDefaultsOnly, Category = Setup)
 	float AcceptanceRadius = 8000; //How close can the AI tank get to the player
 	
